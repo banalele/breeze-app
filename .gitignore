@@ -1,0 +1,6 @@
+build/
+breeze-app-template/
+venv/
+.venv/
+__pycache__/
+*.pyc
