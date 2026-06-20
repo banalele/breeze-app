@@ -1,6 +1,7 @@
 {
 	"folders": [
 		{
+			"name": "imu_ekf_stream",
 			"path": "."
 		}
 	],

@@ -1,1 +1,4 @@
 /* This file will automatic applyed when using rm_typec board */
+&spi1 {
+interrupts = <35 0>;
+};

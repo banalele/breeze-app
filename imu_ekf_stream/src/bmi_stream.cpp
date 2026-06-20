@@ -488,7 +488,7 @@ void Imu_Sensor_t::Ekf_Info_Update()
 		uint32_t cycle_diff = current - imu_cycle_last;
 		imu_cycle_last = current;
 		imu_dt = (float)cycle_diff / (float)cpu_freq;  // 秒
-		LOG_WRN("dt = %.6f s", (double)imu_dt);  // 强制转为 double
+		//LOG_WRN("dt = %.6f s", (double)imu_dt);  // 强制转为 double
 	}
 	this->Dt_Update(imu_dt);
 
@@ -752,13 +752,6 @@ void imu_process(void)
 	}
 	else
 	{
-		
-		// uint32_t sq_avail = rtio_sqe_acquirable(&ctx);    /* 提交队列剩余空间 */
-		// if(sq_avail ==30)
-		// {
-		// 	LOG_WRN("sqe_number=%u", sq_avail);
-		// 	rtio_sqe_drop_all(&ctx);
-		// }
 
 		if (++no_cqe_count >= 200)
 		{
