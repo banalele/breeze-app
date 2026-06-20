@@ -19,11 +19,11 @@ const struct device *gyro_dev = DEVICE_DT_GET(DT_NODELABEL(bmi08x_gyro));
 SENSOR_DT_STREAM_IODEV(accel_iodev, DT_NODELABEL(bmi08x_accel), STREAM_TRIGGERS);
 SENSOR_DT_STREAM_IODEV(gyro_iodev, DT_NODELABEL(bmi08x_gyro), STREAM_TRIGGERS);
 // 内存池定义，提供给异步读取使用
-RTIO_DEFINE_WITH_MEMPOOL(ctx, 32, 32, 256, 256, sizeof(void *));
+RTIO_DEFINE_WITH_MEMPOOL(ctx, 16, 16, 64, 128, sizeof(void *));
 /* 参数说明：名称, sq大小, cq大小, 内存池块数, 每块大小, 对齐方式 */
 
-static uint8_t vofa_buf_1[4096]; // 用于通道 1
-static uint8_t vofa_buf_2[4096]; // 用于通道 2
+static uint8_t vofa_buf_1[1024]; // 用于通道 1
+static uint8_t vofa_buf_2[1024]; // 用于通道 2
 // VOFA+ JustFloat模式 帧尾
 static const uint8_t vofa_tail[4] = {0x00, 0x00, 0x80, 0x7F};
 
