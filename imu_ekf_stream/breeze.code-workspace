@@ -39,12 +39,12 @@
 				"runToEntryPoint": "main",
 				"showDevDebugOutput": "parsed",
 				"device": "STM32F407",
-				"svdFile": "${workspaceFolder}/boards/dji/rm_typec/support/STM32F407.svd",
-				"objdumpPath": "/opt/zephyr-sdk/arm-zephyr-eabi/bin/arm-zephyr-eabi-objdump",
+				"svdFile": "/home/bana/breeze-workspace/breeze-sdk/zephyr/dts/arm/st/stm32f407.svd",
+				"gdbPath": "/home/bana/breeze-workspace/breeze-sdk/toolchain/zephyr-sdk-0.17.4/arm-zephyr-eabi/bin/arm-zephyr-eabi-gdb",
+				"objdumpPath": "/home/bana/breeze-workspace/breeze-sdk/toolchain/zephyr-sdk-0.17.4/arm-zephyr-eabi/bin/arm-zephyr-eabi-objdump",
 				"rttConfig": {
 					"enabled": true,
-					"address": "0x20000000", // F4 的 SRAM 起始地址
-					"searchSize": 196608, // 192KB，STM32F407 全部 SRAM
+					"address": "auto", // F4 的 SRAM 起始地址
 					"decoders": [
 						{
 							"port": 0,
