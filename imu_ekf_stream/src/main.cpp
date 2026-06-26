@@ -27,7 +27,15 @@ static uint8_t vofa_buf_2[1024]; // 用于通道 2
 // VOFA+ JustFloat模式 帧尾
 static const uint8_t vofa_tail[4] = {0x00, 0x00, 0x80, 0x7F};
 
+// ===== 添加线程相关定义 =====
+#define IMU_THREAD_STACK_SIZE 4096
+#define IMU_THREAD_PRIORITY 5
+struct k_thread imu_thread_data;
+K_THREAD_STACK_DEFINE(imu_thread_stack, IMU_THREAD_STACK_SIZE);
+
 using namespace breeze;
+
+
 
 // 配置 RTT 通道
 void vofa_rtt_init(void)
@@ -50,15 +58,43 @@ void vofa_rtt_init(void)
 	LOG_INF("VOFA RTT channel configured\r\n");
 }
 
+//---------
+void imu_thread_task(void *arg1, void *arg2, void *arg3)
+{
+	ARG_UNUSED(arg1);
+	ARG_UNUSED(arg2);
+	ARG_UNUSED(arg3);
+	while (1)
+	{
+		imu_process();
+		k_usleep(500);
+	}
+}
+
+
+void Create_Imu_Thread(void)
+{
+	k_thread_create(
+		&imu_thread_data,						 // 线程控制块
+		imu_thread_stack,						 // 栈空间
+		K_THREAD_STACK_SIZEOF(imu_thread_stack), // 栈大小
+		imu_thread_task,						 // 入口函数
+		NULL, NULL, NULL,						 // 参数
+		IMU_THREAD_PRIORITY,					 // 优先级（数字越小优先级越高）
+		0,										 // 线程选项
+		K_NO_WAIT								 // 启动
+	);
+	k_thread_name_set(&imu_thread_data, "imu_process");
+	LOG_INF("System started, IMU thread running");
+}
 
 int main()
 {
 	vofa_rtt_init(); // 初始化 VOFA RTT 通道
 	Imu_Init(imu_sensor);
-	
+	Create_Imu_Thread();
 	while (1)
 	{
-		imu_process();
 		static uint32_t vofa_cnt = 0;
 		vofa_cnt++;
 		if (vofa_cnt % 20 == 0) {
@@ -74,4 +110,5 @@ int main()
 		}
 		k_usleep(500);
 	}
+	return 0;
 }
