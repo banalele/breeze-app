@@ -1,0 +1,88 @@
+/* This file will automatic applyed when using damiao_mc02 board */
+&bmi08x_accel {
+    fifo-watermark = <3>;
+};
+
+&bmi08x_gyro {
+    fifo-watermark = <3>;
+};
+
+{
+    can_rx_mgr1: can_rx_mgr1 {
+        compatible = "rp,can-rx-manager";
+        status = "okay";
+        can-bus = <&fdcan1>;
+        label = "can_rx_mgr1";
+    };
+
+    can_tx_mgr1: can_tx_mgr1 {
+        compatible = "rp,can-tx-manager";
+        status = "okay";
+        can-bus = <&fdcan1>;
+        label = "can_tx_mgr1";
+    };
+
+    chassis_LF:motor1{
+        compatible = "rp,dji-can-motor";
+        status = "okay";
+        can-bus = <&fdcan1>;
+        rx-manager = <&can_rx_mgr1>;
+        tx-manager = <&can_tx_mgr1>;
+        tx-id = <0x200>;
+        rx-id = <0x201>;
+        motor-type = "M3508";
+        label = "chassis_lf";
+        control-mode = "torque";
+        Tx-feq = <1000>;
+        motor-encoder = <8192>;
+        motor-transmission-ratio = <19>;
+    };
+
+    chassis_LB:motor2{
+        compatible = "rp,dji-can-motor";
+        status = "okay";
+        can-bus = <&fdcan1>;
+        rx-manager = <&can_rx_mgr1>;
+        tx-manager = <&can_tx_mgr1>;
+        tx-id = <0x200>;
+        rx-id = <0x202>;
+        motor-type = "M3508";
+        label = "chassis_lb";
+        control-mode = "torque";
+        Tx-feq = <1000>;
+        motor-encoder = <8192>;
+        motor-transmission-ratio = <19>;
+    };
+
+    chassis_RF:motor3{
+        compatible = "rp,dji-can-motor";
+        status = "okay";
+        can-bus = <&fdcan1>;
+        rx-manager = <&can_rx_mgr1>;
+        tx-manager = <&can_tx_mgr1>;
+        tx-id = <0x200>;
+        rx-id = <0x203>;
+        motor-type = "M3508";
+        label = "chassis_rf";
+        control-mode = "torque";
+        Tx-feq = <1000>;
+        motor-encoder = <8192>;
+        motor-transmission-ratio = <19>;
+    };
+
+    chassis_RB:motor4{
+        compatible = "rp,dji-can-motor";
+        status = "okay";
+        can-bus = <&fdcan1>;
+        rx-manager = <&can_rx_mgr1>;
+        tx-manager = <&can_tx_mgr1>;
+        tx-id = <0x200>;
+        rx-id = <0x204>;
+        motor-type = "M3508";
+        label = "chassis_rb";
+        control-mode = "torque";
+        Tx-feq = <1000>;
+        motor-encoder = <8192>;
+        motor-transmission-ratio = <19>;
+    };
+};

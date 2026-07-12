@@ -1,0 +1,58 @@
+{
+	"folders": [
+		{
+			"name": "infantry_down_test",
+			"path": "."
+		}
+	],
+	"settings": {
+		"cmake.preferredGenerators": [
+			"Ninja",
+			"Unix Makefiles"
+		],
+		"kconfig.zephyr.base": "${workspaceFolder}/../../breeze-sdk/zephyr",
+		"devicetree.zephyr": "${workspaceFolder}/../../breeze-sdk/zephyr",
+		"devicetree.modules": [
+			"${workspaceFolder}/../../breeze",
+			"${workspaceFolder}/../../breeze-sdk/zephyr",
+			"${workspaceFolder}/../../breeze-sdk/modules/*/*"
+		],
+		"cortex-debug.variableUseNaturalFormat": true
+	},
+	"launch": {
+		"version": "0.2.0",
+		"configurations": [
+			{
+				"cwd": "${workspaceRoot}",
+				"executable": "./build/zephyr/zephyr.elf",
+				"name": "Debug with OpenOCD",
+				"request": "launch",
+				"type": "cortex-debug",
+				"servertype": "openocd",
+				//更改openocd.cfg成适合你的开发板的配置文件
+				"configFiles": [
+					"/home/bana/breeze-workspace/breeze-app/infantry_down_test/openocd.cfg"
+				],
+				"searchDir": [
+					"/usr/share/openocd/scripts"
+				],
+				"runToEntryPoint": "main",
+				"showDevDebugOutput": "parsed",
+				"device": "STM32F407",
+				"svdFile": "/home/bana/breeze-workspace/breeze-sdk/zephyr/dts/arm/st/stm32f407.svd",
+				"gdbPath": "/home/bana/breeze-workspace/breeze-sdk/toolchain/zephyr-sdk-0.17.4/arm-zephyr-eabi/bin/arm-zephyr-eabi-gdb",
+				"objdumpPath": "/home/bana/breeze-workspace/breeze-sdk/toolchain/zephyr-sdk-0.17.4/arm-zephyr-eabi/bin/arm-zephyr-eabi-objdump",
+				"rttConfig": {
+					"enabled": true,
+					"address": "auto", // F4 的 SRAM 起始地址
+					"decoders": [
+						{
+							"port": 0,
+							"type": "console"
+						}
+					]
+				}
+			}
+		]
+	}
+}
