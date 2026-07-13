@@ -16,7 +16,6 @@ target_sources(app PRIVATE
     src/main.cpp
     src/DeviceLayer/bmi_stream.cpp
     src/AlgorithmLayer/Algorithm.cpp
-    src/AlgorithmLayer/algo_ave_filter.cpp
     src/AlgorithmLayer/algo_ekf_filter.cpp
     src/AlgorithmLayer/algo_kf_filter.cpp
     src/TaskLayer/all_task.cpp

@@ -1,16 +1,10 @@
-include "conf_task.hpp"
+#include "conf_task.hpp"
 #include <zephyr/logging/log.h>
 
 LOG_MODULE_REGISTER(conf_task, LOG_LEVEL_INF);
 
 namespace infantry_down_test
 {
-
-    /* 声明外部任务函数（在 sys_task.cpp 中定义） */
-    extern "C" void StartSystemUpdateTask(void *argument);
-    extern "C" void StartUpdateTask(void *argument);
-    extern "C" void StartHeartbeatTask(void *argument);
-    extern "C" void StartMonitorTask(void *argument);
 
     /* ---------- 定义线程控制块（实例化） ---------- */
     struct k_thread system_update_thread_ctrl;

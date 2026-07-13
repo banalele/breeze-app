@@ -14,18 +14,30 @@
     #define STACK_SIZE_HEARTBEAT 1024
     #define STACK_SIZE_MONITOR 2048
 
+#ifdef __cplusplus
+    extern "C"
+    {
+#endif
 
-namespace infantry_down_test
-{
-    /* 线程控制块（替代 TaskHandle_t） */
-    extern struct k_thread system_update_thread_ctrl;
-    extern struct k_thread update_thread_ctrl;
-    extern struct k_thread heartbeat_thread_ctrl;
-    extern struct k_thread monitor_thread_ctrl;
+        // 任务回调函数（C链接，供Zephyr内核直接调用）
+        void StartSystemUpdateTask(void *arg1, void *arg2, void *arg3);
+        void StartUpdateTask(void *arg1, void *arg2, void *arg3);
+        void StartHeartbeatTask(void *arg1, void *arg2, void *arg3);
+        void StartMonitorTask(void *arg1, void *arg2, void *arg3);
 
-    
+#ifdef __cplusplus
+    }
+#endif
 
-    /* 初始化所有任务 */
-    void InitProcess(void);
+    namespace infantry_down_test
+    {
+        /* 线程控制块（替代 TaskHandle_t） */
+        extern struct k_thread system_update_thread_ctrl;
+        extern struct k_thread update_thread_ctrl;
+        extern struct k_thread heartbeat_thread_ctrl;
+        extern struct k_thread monitor_thread_ctrl;
+
+        /* 初始化所有任务 */
+        void InitProcess(void);
 
 } // namespace infantry_down_test
