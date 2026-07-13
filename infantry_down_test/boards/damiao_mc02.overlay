@@ -1,12 +1,13 @@
 /* This file will automatic applyed when using damiao_mc02 board */
-    &bmi08x_accel {
-        fifo-watermark = <3>;
-    };
+&bmi08x_accel {
+    fifo-watermark = <3>;
+};
 
-    &bmi08x_gyro {
-        fifo-watermark = <3>;
-    };
+&bmi08x_gyro {
+    fifo-watermark = <3>;
+};
 
+/ {
     can_rx_mgr1: can_rx_mgr1 {
         compatible = "rp,can-rx-manager";
         status = "okay";
@@ -84,3 +85,4 @@
         motor-encoder = <8192>;
         motor-transmission-ratio = <19>;
     };
+};
