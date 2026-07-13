@@ -3,6 +3,7 @@
 #include "imu_ekf.hpp"
 #include <stdint.h>				// 整型类型
 #include <SEGGER_RTT.h>			// RTT
+#include "conf_task.hpp"
 
 LOG_MODULE_REGISTER(infantry_down_test, LOG_LEVEL_INF);
 
@@ -54,9 +55,11 @@ void vofa_rtt_init(void)
 int main()
 {
 
-	
+	//Imu_Init(imu_sensor);
+	infantry_down_test::InitProcess();
 	while (1)
 	{
+			k_sleep(K_FOREVER); // 永远挂起，不消耗 CPU
 		
 	}
 }

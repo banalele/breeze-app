@@ -14,13 +14,18 @@ project(infantry_down_test)
 # 直接添加所有源文件到 app
 target_sources(app PRIVATE
     src/main.cpp
-    src/bmi_stream.cpp
-    src/algorithm/Algorithm.cpp
-    src/algorithm/algo_ekf_filter.cpp
-    src/algorithm/algo_kf_filter.cpp
+    src/DeviceLayer/bmi_stream.cpp
+    src/AlgorithmLayer/Algorithm.cpp
+    src/AlgorithmLayer/algo_ave_filter.cpp
+    src/AlgorithmLayer/algo_ekf_filter.cpp
+    src/AlgorithmLayer/algo_kf_filter.cpp
+    src/TaskLayer/all_task.cpp
+    src/TaskLayer/conf_task.cpp
 )
 
 # 添加头文件路径
 target_include_directories(app PRIVATE
-    src/algorithm/include
+    src/AlgorithmLayer/include      # 算法层头文件
+    src/DeviceLayer                 # 设备层头文件（如 imu_ekf.hpp）
+    src/TaskLayer                   # 任务层头文件（如 conf_task.hpp）
 )
