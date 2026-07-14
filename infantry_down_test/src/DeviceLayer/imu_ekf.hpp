@@ -159,9 +159,9 @@ private:
 };
 
 extern Imu_Sensor_t imu_sensor;
-void Imu_Init(Imu_Sensor_t &imu);
+int Imu_Init(Imu_Sensor_t &imu);
 void Imu_Update(Imu_Sensor_t &imu);
-void imu_process(void);
+void Imu_Process(void);
 } // namespace breeze
 
 #endif // IMU_EKF_H

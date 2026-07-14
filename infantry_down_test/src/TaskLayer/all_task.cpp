@@ -10,6 +10,7 @@ extern "C" void StartSystemUpdateTask(void *arg1, void *arg2, void *arg3)
     LOG_INF("System Update Task started");
     while (true)
     {
+        breeze::Imu_Process();
         k_sleep(K_MSEC(1));
     }
 }
@@ -37,7 +38,7 @@ extern "C" void StartMonitorTask(void *arg1, void *arg2, void *arg3)
     LOG_INF("Monitor Task started");
     while (true)
     {
-        Remote_Print();
+        //Remote_Print();
         k_sleep(K_MSEC(100));
     }
 }

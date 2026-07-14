@@ -717,7 +717,7 @@ static void decode_data(const struct device *dev, uint8_t *buf, uint32_t buf_len
  *  @param
  *
  */
-void imu_process(void)
+void Imu_Process(void)
 {
 	struct rtio_cqe *cqe = rtio_cqe_consume(&ctx);
 	static int no_cqe_count = 0;
@@ -767,25 +767,25 @@ void imu_process(void)
  *  @param
  *
  */
-void Imu_Init(Imu_Sensor_t &imu)
+int Imu_Init(Imu_Sensor_t &imu)
 {
 	EAppStatus status = imu.Ekf_Info_Init();
 	if (status != APP_OK)
 	{
 		LOG_ERR("Failed to initialize EKF: %d", static_cast<int>(status));
-		return;
+		return -1; 
 	}
 
 	if (!device_is_ready(accel_dev))
 	{
 		LOG_ERR("Accelerometer device %s is not ready", accel_dev->name);
-		return;
+		return -1;
 	}
 
 	if (!device_is_ready(gyro_dev))
 	{
 		LOG_ERR("Gyroscope device %s is not ready", gyro_dev->name);
-		return;
+		return -1;
 	}
 
 	imu_ekf_xhat_init();
@@ -793,10 +793,11 @@ void Imu_Init(Imu_Sensor_t &imu)
 	if(stream_init() < 0)
 	{
 		LOG_ERR("Failed to initialize sensor stream");
-		return;
+		return -1;
 	}
 	imu_ekf_P_init();
 	transform_init(&EKFgim_trans);
+	return 0;
 }
 
 /*
