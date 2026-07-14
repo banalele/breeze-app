@@ -1,6 +1,7 @@
 #include <zephyr/kernel.h>
 #include <zephyr/logging/log.h>
 #include "conf_task.hpp"
+#include "device.hpp"				// 设备
 
 LOG_MODULE_REGISTER(all_task, LOG_LEVEL_INF);
 
@@ -36,6 +37,7 @@ extern "C" void StartMonitorTask(void *arg1, void *arg2, void *arg3)
     LOG_INF("Monitor Task started");
     while (true)
     {
-        k_sleep(K_MSEC(10));
+        Remote_Print();
+        k_sleep(K_MSEC(100));
     }
 }

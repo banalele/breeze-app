@@ -20,6 +20,8 @@ target_sources(app PRIVATE
     src/AlgorithmLayer/algo_kf_filter.cpp
     src/TaskLayer/all_task.cpp
     src/TaskLayer/conf_task.cpp
+    src/DeviceLayer/device.cpp
+    src/DeviceLayer/device_remote.c
 )
 
 # 添加头文件路径
