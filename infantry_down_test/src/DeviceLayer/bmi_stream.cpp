@@ -528,6 +528,8 @@ void Imu_Sensor_t::Ekf_Info_Update()
 
 	gimbal_info.YawTotalAngle = 360.0f * gimbal_info.YawRoundCount + Yaw;
 	YawAngleLast = Yaw;
+	//心跳更新使用
+	work_state.last_heartbeat_time = k_uptime_get();
 }
 
 void Imu_Sensor_t::Info_Print()

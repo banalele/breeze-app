@@ -20,7 +20,7 @@ extern "C" void StartUpdateTask(void *arg1, void *arg2, void *arg3)
     // 注意：参数名统一为 arg3，不要写 arg3t
     while (true)
     {
-        k_sleep(K_MSEC(1));
+        k_sleep(K_MSEC(10));
     }
 }
 

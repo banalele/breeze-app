@@ -63,10 +63,23 @@ typedef enum
 	IMU_DATA_CALI,
 } imu_err_e;
 
+/**
+ *	@brief	设备工作状态(通用)
+ *	@class	device
+ */
+typedef enum
+{
+	DEV_OFFLINE,
+	DEV_ONLINE,
+} dev_work_state_t;
+
 typedef struct work_state_struct
 {
 	imu_err_e err_code;
 
+	dev_work_state_t dev_state;
+	
+	uint32_t last_heartbeat_time; // 上次心跳时间戳
 } work_state_t;
 
 
