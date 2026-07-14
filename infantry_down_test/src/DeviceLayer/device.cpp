@@ -35,5 +35,6 @@ int Device_Init(void)
         return ret;
     }
 
+    vofa_rtt_init();
     return 0;
 }

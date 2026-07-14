@@ -22,6 +22,7 @@ target_sources(app PRIVATE
     src/TaskLayer/conf_task.cpp
     src/DeviceLayer/device.cpp
     src/DeviceLayer/device_remote.c
+    src/DeviceLayer/rtt.c
 )
 
 # 添加头文件路径
