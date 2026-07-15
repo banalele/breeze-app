@@ -41,7 +41,7 @@ extern "C" void StartMonitorTask(void *arg1, void *arg2, void *arg3)
     LOG_INF("Monitor Task started");
     while (true)
     {
-        Remote_Print();
+        //Remote_Print();
         
 		// 发送数据
 		float vofa_data[] = {
