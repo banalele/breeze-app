@@ -850,7 +850,7 @@ void Imu_Update(Imu_Sensor_t &imu)
 
 	imu.Raw_Info_Update(gyrox, gyroy, gyroz,accx, accy, accz);
 	imu.Ekf_Info_Update();
-	imu.Info_Print();
+	//imu.Info_Print();
 }
 
 }// namespace breeze

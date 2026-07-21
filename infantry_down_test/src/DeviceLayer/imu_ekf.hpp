@@ -12,6 +12,7 @@
 #include <zephyr/device.h>
 #include <zephyr/drivers/sensor.h>
 #include "algo_ekf_filter.hpp"
+#include "rp_device_config.h"
 
 namespace breeze
 {
@@ -62,16 +63,6 @@ typedef enum
 	IMU_DATA_ERR,
 	IMU_DATA_CALI,
 } imu_err_e;
-
-/**
- *	@brief	设备工作状态(通用)
- *	@class	device
- */
-typedef enum
-{
-	DEV_OFFLINE,
-	DEV_ONLINE,
-} dev_work_state_t;
 
 typedef struct work_state_struct
 {

@@ -9,10 +9,10 @@
     #define proc_MonitorTaskPriority 5   // 监控任务（最低）
 
     /* 任务栈大小定义 */
-    #define STACK_SIZE_SYSTEM 2048
+    #define STACK_SIZE_SYSTEM 4096
     #define STACK_SIZE_UPDATE 4096
     #define STACK_SIZE_HEARTBEAT 1024
-    #define STACK_SIZE_MONITOR 2048
+    #define STACK_SIZE_MONITOR 4096
 
 #ifdef __cplusplus
     extern "C"
