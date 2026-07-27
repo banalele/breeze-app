@@ -9,9 +9,17 @@
 
 #ifndef IMU_EKF_HPP
 #define IMU_EKF_HPP
+#include <cmath>
 #include <zephyr/device.h>
 #include <zephyr/drivers/sensor.h>
-#include "algo_ekf_filter.hpp"
+
+// 解决 _current 宏冲突：临时取消宏定义
+#pragma push_macro("_current")
+#undef _current
+#include <robotpilots/algorithm/algo_ekf_filter.hpp>
+#pragma pop_macro("_current")
+
+using namespace robotpilots::algorithm;
 
 namespace breeze
 {
