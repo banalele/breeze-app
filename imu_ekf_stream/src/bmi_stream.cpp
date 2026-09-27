@@ -712,28 +712,54 @@ static void decode_data(const struct device *dev, uint8_t *buf, uint32_t buf_len
 	}
 }
 
-
 /** @brief  imu 主线程
  *  @param
  *
  */
-void imu_process(void)
+void Imu_Process(void)
 {
-	struct rtio_cqe *cqe = rtio_cqe_consume(&ctx);
+	struct rtio_cqe *cqe;
 	static int no_cqe_count = 0;
 	uint8_t *buf;
 	uint32_t buf_len;
-	
-	if (cqe != NULL)
+
+	/* 一次把 CQ 里所有已完成的 CQE 全部取走。
+	 * CQ 只有 16 深，而 accel+gyro 水位中断合计约 225 次/s；若每轮只取一个，
+	 * CQ 会被填满，此时 rtio_cqe_submit() 会直接丢弃 CQE
+	 * （atomic_inc(&ctx.xcqcnt)）—— 被丢弃的 CQE 里带着 mempool 块号，
+	 * 那块内存再也没人归还，最终 64 个块耗尽，
+	 * rtio_sqe_rx_buf() 返回 -ENOMEM，流永久停摆。
+	 */
+	while (true)
 	{
+		cqe = rtio_cqe_consume(&ctx);
+
+		/* CQ 已空：说明这一轮把积压的事件都处理完了，
+		 * 计数 + 让出 CPU 后退出本轮。
+		 */
+		if (cqe == NULL)
+		{
+			if (++no_cqe_count >= 200)
+			{
+				LOG_WRN("no RTIO completions for %u cycles", no_cqe_count);
+				no_cqe_count = 0;
+			}
+			k_sleep(K_MSEC(1));
+			break;
+		}
+
+		/* 只要取到过数据，就把空转计数清零 */
 		no_cqe_count = 0;
-		
 
 		if (cqe->result != 0)
 		{
+			/* 出错时执行器已自行 rtio_release_buffer()，
+			 * 这里不能再释放，否则会重复归还。
+			 * 用 continue 而不是 return，保证同一轮把剩余 CQE 也取完。
+			 */
 			LOG_ERR("async read failed %d\n", cqe->result);
 			rtio_cqe_release(&ctx, cqe);
-			return;
+			continue;
 		}
 
 		const struct device *dev = (const struct device *)cqe->userdata;
@@ -749,17 +775,6 @@ void imu_process(void)
 			LOG_ERR("Failed to get buffer from CQE");
 		}
 		rtio_cqe_release(&ctx, cqe);
-	}
-	else
-	{
-
-		if (++no_cqe_count >= 200)
-		{
-
-			LOG_WRN("no RTIO completions for %u cycles", no_cqe_count);
-			no_cqe_count = 0;
-		}
-		k_sleep(K_MSEC(1));
 	}
 }
 

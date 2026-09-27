@@ -1,9 +1,8 @@
-#include "zephyr/kernel.h"
-#include "zephyr/logging/log.h"
 #include "imu_ekf.hpp"
+#include "zephyr/logging/log.h"
 #include <stdint.h>				// 整型类型
 #include <SEGGER_RTT.h>			// RTT
-
+// 注意：imu_ekf.hpp（内部会包含 ETL）必须先于 zephyr/logging/log.h 编译，否则会宏污染
 LOG_MODULE_REGISTER(imu_ekf_sample, LOG_LEVEL_INF);
 
 // RTT 通道索引

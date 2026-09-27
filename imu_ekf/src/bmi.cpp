@@ -1,6 +1,6 @@
-#include <cmath>
-#include <arm_math.h>
 #include "imu_ekf.hpp"
+#include <zephyr/device.h>
+#include <zephyr/drivers/sensor.h>
 #include <zephyr/logging/log.h>
 LOG_MODULE_REGISTER(imu_sensor, LOG_LEVEL_INF);
 
