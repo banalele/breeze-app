@@ -744,7 +744,7 @@ void Imu_Process(void)
 				LOG_WRN("no RTIO completions for %u cycles", no_cqe_count);
 				no_cqe_count = 0;
 			}
-			k_sleep(K_MSEC(1));
+			k_yield(); // 让出 CPU
 			break;
 		}
 

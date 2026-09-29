@@ -72,6 +72,6 @@ int main()
 			SEGGER_RTT_Write(RTT_CH_VOFA_1, vofa_data, sizeof(vofa_data));
 			SEGGER_RTT_Write(RTT_CH_VOFA_1, vofa_tail, sizeof(vofa_tail));
 		}
-		k_usleep(500);
+		k_sleep(K_MSEC(1));
 	}
 }
