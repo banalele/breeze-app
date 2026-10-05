@@ -118,7 +118,7 @@ void Vector_Transform(float gx, float gy, float gz,
  * @param
  *
  */
-void EKF_jacF_Update(Matrixt<float> &xhat, Matrixt<float> &u, float dt, Matrixt<float> &F)
+void EKF_jacF_Update(Matrixt<float, kEkfMatN> &xhat, Matrixt<float, kEkfMatN> &u, float dt, Matrixt<float, kEkfMatN> &F)
 {
 	// 单位化
 	float q0, q1, q2, q3;
@@ -147,9 +147,9 @@ void EKF_jacF_Update(Matrixt<float> &xhat, Matrixt<float> &u, float dt, Matrixt<
 }
 
 
-void EKF_jacH_Update(const Matrixt<float> &xhatMinus, Matrixt<float> &H)
+void EKF_jacH_Update(const Matrixt<float, kEkfMatN> &xhatMinus, Matrixt<float, kEkfMatN> &H)
 {
-	H = zeros<float>(3, 6); 
+	H = zeros<float, kEkfMatN>(3, 6); 
 	float doubleq0, doubleq1, doubleq2, doubleq3;
 	doubleq0 = 2.0f * xhatMinus[0][0];
 	doubleq1 = 2.0f * xhatMinus[1][0];
@@ -170,7 +170,7 @@ void EKF_jacH_Update(const Matrixt<float> &xhatMinus, Matrixt<float> &H)
 	H[2][3] = -doubleq3;
 }
 
-void EKF_P_Update(Matrixt<float> &P)
+void EKF_P_Update(Matrixt<float, kEkfMatN> &P)
 {
 	float lambda = imu_sensor.lambda;
 
@@ -187,9 +187,9 @@ void EKF_P_Update(Matrixt<float> &P)
 }
 
 // 先设定状态转移矩阵F的左上角部分 4x4子矩阵,即0.5(Ohm-Ohm^bias)*deltaT,右下角有一个2x2单位阵已经初始化好了非线性计算先验xhat
-Matrixt<float> EKF_F_XhatMinus_Update(Matrixt<float> &xhat, Matrixt<float> &u, float dt, Matrixt<float> &F, Matrixt<float> &B)
+Matrixt<float, kEkfMatN> EKF_F_XhatMinus_Update(Matrixt<float, kEkfMatN> &xhat, Matrixt<float, kEkfMatN> &u, float dt, Matrixt<float, kEkfMatN> &F, Matrixt<float, kEkfMatN> &B)
 {
-	Matrixt<float> xhatMinus(6, 1);
+	Matrixt<float, kEkfMatN> xhatMinus(6, 1);
 	float halfgxdt, halfgydt, halfgzdt;
 	float Gyro[3] = {imu_sensor.Gyro[0], imu_sensor.Gyro[1], imu_sensor.Gyro[2]};
 	// set F
@@ -201,7 +201,7 @@ Matrixt<float> EKF_F_XhatMinus_Update(Matrixt<float> &xhat, Matrixt<float> &u, f
     24     25     26     27     28    29
     30     31     32     33     34    35
     */
-	F = eye<float>(6); 
+	F = eye<float, kEkfMatN>(6); 
 	halfgxdt = 0.5f * Gyro[0] * dt;
 	halfgydt = 0.5f * Gyro[1] * dt;
 	halfgzdt = 0.5f * Gyro[2] * dt;
@@ -236,9 +236,9 @@ Matrixt<float> EKF_F_XhatMinus_Update(Matrixt<float> &xhat, Matrixt<float> &u, f
 	return xhatMinus;
 };
 
-Matrixt<float> EKF_H_Update(const Matrixt<float> &xhatMinus)
+Matrixt<float, kEkfMatN> EKF_H_Update(const Matrixt<float, kEkfMatN> &xhatMinus)
 {
-	Matrixt<float> h(3, 1);
+	Matrixt<float, kEkfMatN> h(3, 1);
 	float q0, q1, q2, q3;
 	q0 = xhatMinus[0][0];
 	q1 = xhatMinus[1][0];	
@@ -265,7 +265,7 @@ Matrixt<float> EKF_H_Update(const Matrixt<float> &xhatMinus)
  * @param	float Chi 卡方统计量
  * @return	bool 检验结果
  */
-bool EKF_Chi_Update(Matrixt<float> &K, Matrixt<float> &P,const Matrixt<float> &Pminus,const Matrixt<float> &H, const Matrixt<float> &R, float Chi)
+bool EKF_Chi_Update(Matrixt<float, kEkfMatN> &K, Matrixt<float, kEkfMatN> &P,const Matrixt<float, kEkfMatN> &Pminus,const Matrixt<float, kEkfMatN> &H, const Matrixt<float, kEkfMatN> &R, float Chi)
 {
 	float threshold = imu_sensor.ChiSquareTestThreshold;
 	bool stable = imu_sensor.StableFlag;
@@ -336,7 +336,7 @@ bool EKF_Chi_Update(Matrixt<float> &K, Matrixt<float> &P,const Matrixt<float> &P
  * @brief EKF动态增益更新，要先调用Algo_Kf_K_Update()再动态调整
  * @param	Matrixt<float> &K 增益矩阵
  */
-void EKF_K_Update(Matrixt<float> &K)
+void EKF_K_Update(Matrixt<float, kEkfMatN> &K)
 {
 	bool converge = imu_sensor.ChiConverge;
 	float Chi = imu_sensor.ChiSquare_Data;
@@ -380,7 +380,7 @@ void EKF_K_Update(Matrixt<float> &K)
  * @param	Matrixt<float> &correct 卡尔曼增益乘以测量残差的校正项
  * @param	float dt 更新周期
  */
-void EKF_Xhat_Update(Matrixt<float> & xhat, const Matrixt<float> &xhatMinus, Matrixt<float> &correct, float dt)
+void EKF_Xhat_Update(Matrixt<float, kEkfMatN> & xhat, const Matrixt<float, kEkfMatN> &xhatMinus, Matrixt<float, kEkfMatN> &correct, float dt)
 {
 	//零漂修正限幅,一般不会有过大的漂移
 	for (uint8_t i = 4; i < 6; ++i)
@@ -433,7 +433,7 @@ void Imu_Sensor_t::Raw_Info_Update(float gx, float gy, float gz, float ax, float
 	Accel[1] = ay;
 	Accel[2] = az;
 	accl_norm = sqrt(ax * ax + ay * ay + az * az);
-	Matrixt<float> accel_measure(3, 1);
+	Matrixt<float, kEkfMatN> accel_measure(3, 1);
 	if (accl_norm > 1e-6f && !std::isnan(accl_norm)) {
 		accelInvNorm = 1.0f / accl_norm;
 		accel_measure[0][0] = ax * accelInvNorm;
@@ -462,7 +462,7 @@ static float imu_dt;
 void Imu_Sensor_t::Ekf_Info_Update()
 {
 	//setQ,R
-	Matrixt<float> Q = zeros<float>(6, 6);
+	Matrixt<float, kEkfMatN> Q = zeros<float, kEkfMatN>(6, 6);
 	Q[0][0] = Q1*dt;
 	Q[1][1] = Q1*dt;
 	Q[2][2] = Q1*dt;
@@ -471,7 +471,7 @@ void Imu_Sensor_t::Ekf_Info_Update()
 	Q[5][5] = Q2*dt;
 	imu_ekf.Set_Q(Q);
 
-	Matrixt<float> R_mat = zeros<float>(3, 3);
+	Matrixt<float, kEkfMatN> R_mat = zeros<float, kEkfMatN>(3, 3);
 	R_mat[0][0] = R;
 	R_mat[1][1] = R;
 	R_mat[2][2] = R;
@@ -577,7 +577,7 @@ static void imu_ekf_xhat_init()
 	float half_pitch = pitch / 2.0f;
 	float half_roll = roll / 2.0f;
 
-	Matrixt<float> xhat(6, 1);
+	Matrixt<float, kEkfMatN> xhat(6, 1);
 	// 初始化四元数为单位四元数 [1, 0, 0, 0]
 	xhat[0][0] = cos(half_pitch) * cos(half_roll); // q0
 	xhat[1][0] = cos(half_pitch) * sin(half_roll); // q1
@@ -594,7 +594,7 @@ static void imu_ekf_xhat_init()
  */
 static void imu_ekf_P_init()
 {
-	Matrixt<float> P(6, 6);
+	Matrixt<float, kEkfMatN> P(6, 6);
 	for (uint8_t i = 0; i < 36; ++i)
 	{
 		P[i / 6][i % 6] = IMU_QuaternionEKF_P[i];

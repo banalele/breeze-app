@@ -17,6 +17,11 @@ using namespace robotpilots::algorithm;
 namespace breeze
 {
 
+/* EKF 矩阵模板参数 N：矩阵元素容量上限
+ * 本工程状态量 x_size = 6，最大矩阵为 6x6 = 36 个元素，故取 36。
+ * 必须与 CAlgo_Ekf<N> / Matrixt<float, N> 保持一致。 */
+static constexpr uint16_t kEkfMatN = 36;
+
 /* 陀螺仪坐标变换为云台坐标结构体 */
 typedef struct {
 	float arz;
@@ -71,16 +76,16 @@ typedef struct work_state_struct
 } work_state_t;
 
 
-Matrixt<float> EKF_F_XhatMinus_Update(Matrixt<float> &xhat, Matrixt<float> &u, float dt,
-									  Matrixt<float> &F, Matrixt<float> &B);
-Matrixt<float> EKF_H_Update(const Matrixt<float> &xhatMinus);
-void EKF_jacF_Update(Matrixt<float> &xhat, Matrixt<float> &u, float dt, Matrixt<float> &F);
-void EKF_jacH_Update(const Matrixt<float> &xhatMinus, Matrixt<float> &H);
-void EKF_P_Update(Matrixt<float> &P);
-bool EKF_Chi_Update(Matrixt<float> &K, Matrixt<float> &P, const Matrixt<float> &Pminus, 
-					const Matrixt<float> &H, const Matrixt<float> &R, float Chi);
-void EKF_K_Update(Matrixt<float> &K);
-void EKF_Xhat_Update(Matrixt<float> &xhat, const Matrixt<float> &xhatMinus, Matrixt<float> &correct, float dt);
+Matrixt<float, kEkfMatN> EKF_F_XhatMinus_Update(Matrixt<float, kEkfMatN> &xhat, Matrixt<float, kEkfMatN> &u, float dt,
+									  Matrixt<float, kEkfMatN> &F, Matrixt<float, kEkfMatN> &B);
+Matrixt<float, kEkfMatN> EKF_H_Update(const Matrixt<float, kEkfMatN> &xhatMinus);
+void EKF_jacF_Update(Matrixt<float, kEkfMatN> &xhat, Matrixt<float, kEkfMatN> &u, float dt, Matrixt<float, kEkfMatN> &F);
+void EKF_jacH_Update(const Matrixt<float, kEkfMatN> &xhatMinus, Matrixt<float, kEkfMatN> &H);
+void EKF_P_Update(Matrixt<float, kEkfMatN> &P);
+bool EKF_Chi_Update(Matrixt<float, kEkfMatN> &K, Matrixt<float, kEkfMatN> &P, const Matrixt<float, kEkfMatN> &Pminus, 
+					const Matrixt<float, kEkfMatN> &H, const Matrixt<float, kEkfMatN> &R, float Chi);
+void EKF_K_Update(Matrixt<float, kEkfMatN> &K);
+void EKF_Xhat_Update(Matrixt<float, kEkfMatN> &xhat, const Matrixt<float, kEkfMatN> &xhatMinus, Matrixt<float, kEkfMatN> &correct, float dt);
 
 class Imu_Sensor_t 
 {
@@ -108,7 +113,7 @@ public:
 	work_state_t work_state;
 	
 
-	CAlgo_Ekf imu_ekf; // EKF实例
+	CAlgo_Ekf<kEkfMatN> imu_ekf; // EKF实例
 
 	Imu_Sensor_t();
 	~Imu_Sensor_t() noexcept = default;
@@ -116,7 +121,7 @@ public:
 	EAppStatus Ekf_Info_Init()
 	{
 		// 初始化EKF参数
-		CAlgo_Ekf::SAlgoEKfInitParam ekf_param;
+		CAlgo_Ekf<kEkfMatN>::SAlgoEKfInitParam ekf_param;
 		ekf_param.AlgoID = EAlgoID::ALGO_IMU_EKF;
 		ekf_param.DT = dt;
 		ekf_param.x_size = 6; // 四元数(4) + 陀螺仪零偏(2)
