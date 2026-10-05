@@ -58,7 +58,7 @@ int main()
 	
 	while (1)
 	{
-		imu_process();
+		Imu_Process();
 		static uint32_t vofa_cnt = 0;
 		vofa_cnt++;
 		if (vofa_cnt % 20 == 0) {
