@@ -1,0 +1,19 @@
+/* This file will automatic applyed when using damiao_mc02 board */
+
+&gpioc {
+	/* 板载可控电源使能：PC15 高电平开电
+	 * gpio-hog：Zephyr 在 POST_KERNEL 自动把该引脚配成输出并拉高，
+	 * 早于 main()，不需要任何电源管理代码。
+	 */
+	imu_vcc: imu-vcc {
+		gpio-hog;
+		gpios = <15 GPIO_ACTIVE_HIGH>;
+		output-high;
+		line-name = "imu_vcc";
+	};
+};
+
+&usart10 {
+	current-speed = <2000000>;
+};
+
