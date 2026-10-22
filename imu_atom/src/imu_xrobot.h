@@ -5,7 +5,7 @@
  *
  * 参照 HAL 版 imu_xrobot.h / imu_xrobot.c 移植，差别只有传输层：
  *   HAL 版  : USART1 + DMA 循环 + 空闲中断，在中断里解析
- *   Zephyr 版: USART10（RX=PE2, TX=PE3, 2000000 8N1）中断接收 + 环形缓冲，
+ *   Zephyr 版: USART10（RX=PE2, TX=PE3, 2000000 8N1）DMA 接收 + 环形缓冲，
  *              主循环每 1 ms 调用 imu_update() -> imu_encode() 解析
  *
  * 数据仍然放在全局变量 imu_data 中，任意位置 extern 后直接读取：
