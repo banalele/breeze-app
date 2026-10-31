@@ -70,9 +70,10 @@ int main(void)
 
 			float vofa_data[] = {
 				(float)k_uptime_get_32() / 1000.0f, // 时间戳（秒）
-				imu_data.eulr_.yaw,					// 偏航角（度）
-				imu_data.eulr_.pit,					// 俯仰角（度）
-				imu_data.eulr_.rol,					// 横滚角（度）
+				(float)(imu_data.time[0] | (imu_data.time[1] << 8) | (imu_data.time[2] << 16) | (imu_data.time[3] << 24)), // 微秒时间戳（低 32 位）
+				(float)imu_data.eulr_.yaw,					// 偏航角（度）
+				(float)imu_data.eulr_.pit,					// 俯仰角（度）
+				(float)imu_data.eulr_.rol,					// 横滚角（度）
 			};
 			// 将数据包写入 RTT 上行通道
 			SEGGER_RTT_Write(RTT_CH_VOFA_1, vofa_data, sizeof(vofa_data));
