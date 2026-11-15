@@ -129,7 +129,7 @@ int Motor_Init()
     {
         const struct device *rx_mgr = gimbal_motor_get_rx_mgr(i);
         uint16_t rx_id = gimbal_motor_get_rx_id(i);
-        if ((rx_mgr == NULL) || (rx_id == 0U))
+        if ((rx_mgr == NULL))
         {
             LOG_ERR("Gimbal motor %d: rx manager or rx id missing", i);
             return -ENODEV;
