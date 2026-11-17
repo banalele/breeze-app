@@ -56,7 +56,7 @@
         motor-type = "M3508";
         label = "chassis_lf";
         control-mode = "torque";
-        Tx-feq = <1000>;
+        Tx-feq = <500>;
         motor-encoder = <8192>;
         motor-transmission-ratio = <19>;
     };
@@ -72,7 +72,7 @@
         motor-type = "M3508";
         label = "chassis_lb";
         control-mode = "torque";
-        Tx-feq = <1000>;
+        Tx-feq = <500>;
         motor-encoder = <8192>;
         motor-transmission-ratio = <19>;
     };
@@ -88,7 +88,7 @@
         motor-type = "M3508";
         label = "chassis_rf";
         control-mode = "torque";
-        Tx-feq = <1000>;
+        Tx-feq = <500>;
         motor-encoder = <8192>;
         motor-transmission-ratio = <19>;
     };
@@ -104,7 +104,7 @@
         motor-type = "M3508";
         label = "chassis_rb";
         control-mode = "torque";
-        Tx-feq = <1000>;
+        Tx-feq = <500>;
         motor-encoder = <8192>;
         motor-transmission-ratio = <19>;
     };
