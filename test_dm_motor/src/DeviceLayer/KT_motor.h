@@ -138,8 +138,7 @@ typedef struct KT_motor_class_t
 	// W表示写，R表示读，cmd是命令
 
 	void (*get_info)(struct KT_motor_class_t *motor);
-	void (*tx_W_cmd)(struct KT_motor_class_t *motor, uint8_t command); // 发送写命令
-	void (*W_iqControl)(struct KT_motor_class_t *motor, int16_t iqControl);
+	void (*single_set_torque)(struct KT_motor_class_t *motor);
 
 } KT_motor_t;
 

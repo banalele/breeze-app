@@ -2,7 +2,7 @@
 
 /* Private functions ---------------------------------------------------------*/
 #define OFFLINE_LINE_CNT_MAX 100
-#define KT_TX_IQ_CONTROL_MAX 2000		   //-2048~2048   ← 被 W_iqControl 使用（外部调用了）
+#define KT_TX_IQ_CONTROL_MAX 2000		   //-2048~2048   ← 被 Motor_Set_Torque 使用
 
 
 void KT_motor_class_heartbeat(KT_motor_t *motor);
@@ -11,9 +11,7 @@ void get_kt_motor_info(KT_motor_t *motor);
 
 static void KT_Encoder_Sum_Cal(KT_motor_t *motor);
 
-void tx_kt_motor_W_command(KT_motor_t *motor, uint8_t command);
-
-void write_kt_motor_iqControl_param(KT_motor_t *motor, int16_t iqControl);
+void Motor_Set_Torque(KT_motor_t *motor);
 
 /**
 
@@ -36,8 +34,7 @@ void KT_motor_class_init(KT_motor_t *motor)
 	motor->KT_motor_info.state_info.work_state = M_OFFLINE;
 	motor->heartbeat = KT_motor_class_heartbeat;
 	motor->get_info = get_kt_motor_info;
-	motor->tx_W_cmd = tx_kt_motor_W_command;
-	motor->W_iqControl = write_kt_motor_iqControl_param;
+	motor->single_set_torque = Motor_Set_Torque;
 }
 
 /**
@@ -66,41 +63,18 @@ void KT_motor_class_heartbeat(KT_motor_t *motor)
 
  */
 
-void tx_kt_motor_W_command(KT_motor_t *motor, uint8_t command)
+void Motor_Set_Torque(KT_motor_t *motor)
 {
 	if (motor == NULL)
 		return;
 
-	KT_motor_tx_info_t *tx_info = &motor->KT_motor_info.tx_info;
-	memset((uint8_t *)motor->tx_buff, 0, 8);
 
-	/* 通过 LK 驱动 API 写入 TX buffer，由 TX Manager 定时发送 */
-	switch (command)
-	{
-	case TORQUE_CLOSE_LOOP_ID: // 闭环转矩控制，控制扭矩电流
+	int16_t iqControl = constrain(motor->KT_motor_info.tx_info.iqControl, -KT_TX_IQ_CONTROL_MAX, KT_TX_IQ_CONTROL_MAX);
 
-		motor->tx_buff[0] = TORQUE_CLOSE_LOOP_ID;
-
-		motor->tx_buff[1] = 0x00;
-
-		motor->tx_buff[2] = 0x00;
-
-		motor->tx_buff[3] = 0x00;
-
-		motor->tx_buff[4] = *(uint8_t *)(&tx_info->iqControl);
-
-		motor->tx_buff[5] = *((uint8_t *)(&tx_info->iqControl) + 1);
-
-		motor->tx_buff[6] = 0x00;
-
-		motor->tx_buff[7] = 0x00;
-
-		break;
-	default:
-		break;
-	}
-	
-	single_closedloop_control(motor->lk_motor, tx_info->iqControl);
+	motor->KT_motor_info.tx_info.iqControl = iqControl;
+	/* 单电机模式(tx-id 0x141)：必须用 0xA1 单电机闭环转矩命令；
+	 * motor_torque_control() 对应的是多电机模式(tx-id 0x280)，这里不能用 */
+	single_closedloop_control(motor->lk_motor, iqControl);
 }
 
 /**
@@ -189,21 +163,4 @@ void get_kt_motor_info(KT_motor_t *motor)
 	KT_Encoder_Sum_Cal(motor);
 }
 
-/**
 
- *	@brief 写电机的发送结构体的扭矩电流控制目标参数
-
- */
-
-void write_kt_motor_iqControl_param(KT_motor_t *motor, int16_t iqControl)
-
-{
-
-	if (motor == NULL)
-
-		return;
-
-	iqControl = constrain(iqControl, -KT_TX_IQ_CONTROL_MAX, KT_TX_IQ_CONTROL_MAX);
-
-	motor->KT_motor_info.tx_info.iqControl = iqControl;
-}
