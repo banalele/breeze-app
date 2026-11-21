@@ -17,6 +17,7 @@
 #define CHASSIS_LB_NODE DT_NODELABEL(chassis_lb)
 #define CHASSIS_RF_NODE DT_NODELABEL(chassis_rf)
 #define CHASSIS_RB_NODE DT_NODELABEL(chassis_rb)
+#define DIAL_MOTOR_NODE DT_NODELABEL(dial_motor)
 
 #ifdef CONFIG_CAN_RX_MANAGER
 #define RX_MANAGER1_NODE DT_NODELABEL(can_rx_mgr1)
@@ -44,6 +45,7 @@ extern "C"
 #endif
     extern Motor_DM_t gimbal_motor[GIMBAL_CNT];
     extern Motor_RM_t chassis_motor[RMMOTOR_CNT];
+    extern KT_motor_t dail_motor;
 
     int Motor_Init(void);
     void Motor_Heartbeat(void);

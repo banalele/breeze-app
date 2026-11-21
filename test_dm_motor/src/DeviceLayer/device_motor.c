@@ -97,12 +97,18 @@ Motor_RM_t chassis_motor[RMMOTOR_CNT] =
     },
 };
 
+KT_motor_t dail_motor =
+{
+    .lk_motor = DEVICE_DT_GET(DIAL_MOTOR_NODE), // boards/*.overlay 中 label = "dial_motor" 的 LK 电机节点
+    .init = &KT_motor_class_init,               // 由 init 内部完成 heartbeat/get_info 函数指针赋值
+};
+
 //MOTOR_INIT----------------------------------------------------
 #ifdef CONFIG_CAN_RX_MANAGER
-/**
- * @brief DM 云台电机接收监听器：由 CAN RX 线程在驱动解析完 rx_data 后立即调用（等价于轮询里的 gimbal_motor[i].rx()）。
- */
-static void gimbal_motor_rx_handler(const struct can_frame *frame, void *user_data)
+    /**
+     * @brief DM 云台电机接收监听器：由 CAN RX 线程在驱动解析完 rx_data 后立即调用（等价于轮询里的 gimbal_motor[i].rx()）。
+     */
+    static void gimbal_motor_rx_handler(const struct can_frame *frame, void *user_data)
 {
     Motor_DM_t *motor = (Motor_DM_t *)user_data;
     (void)frame;
@@ -180,6 +186,20 @@ static uint16_t chassis_motor_get_rx_id(int idx)
         return 0;
     }
 }
+
+/**
+ * @brief KT 拨盘电机接收监听器：由 CAN RX 线程在驱动解析完 rx_data 后调用，
+ *        把驱动层的解析结果同步到 KT_motor_info（等价于轮询里的 dail_motor.get_info()）。
+ */
+static void dial_motor_rx_handler(const struct can_frame *frame, void *user_data)
+{
+    KT_motor_t *motor = (KT_motor_t *)user_data;
+    (void)frame;
+    if ((motor != NULL) && (motor->get_info != NULL))
+    {
+        motor->get_info(motor);
+    }
+}
 #endif /* CONFIG_CAN_RX_MANAGER */
 
 int Motor_Init()
@@ -217,6 +237,19 @@ int Motor_Init()
         }
         chassis_motor[i].single_init(&chassis_motor[i]);
     }
+
+    /* KT 拨盘电机：设备检查 + 结构体初始化（函数指针赋值） */
+    if (!dail_motor.lk_motor)
+    {
+        LOG_ERR("Dial motor not found!");
+        return -ENODEV;
+    }
+    if (!device_is_ready(dail_motor.lk_motor))
+    {
+        LOG_ERR("Dial motor is not ready!");
+        return -ENODEV;
+    }
+    dail_motor.init(&dail_motor);
 
 #ifdef CONFIG_CAN_RX_MANAGER
     if (!rx_mgr1)
@@ -269,6 +302,19 @@ int Motor_Init()
             return -ENODEV;
         }
     }
+
+    /* KT 拨盘电机：LK 驱动内部会完成 RX/TX Manager 注册 */
+    if (register_motor(dail_motor.lk_motor) < 0)
+    {
+        LOG_ERR("Failed to register dial motor");
+        return -ENODEV;
+    }
+    /* 单电机模式上电后默认是关闭状态，需发送 0x88 使能，之后才会响应 0xA1 扭矩命令 */
+    if (motor_enable(dail_motor.lk_motor) < 0)
+    {
+        LOG_ERR("Failed to enable dial motor");
+        return -ENODEV;
+    }
 #ifdef CONFIG_CAN_RX_MANAGER
     /* 应用层追加电机接收监听器（DM 云台 + RM 底盘）：必须在驱动 register_motor() 之后注册，
      * 保证同一帧内驱动先解析 rx_data，再由本监听器调用 xxx_motor[i].rx() */
@@ -315,6 +361,28 @@ int Motor_Init()
             return ret;
         }
     }
+
+    /* KT 拨盘电机接收监听器：必须在 register_motor() 之后注册 */
+    {
+        const struct device *rx_mgr = DEVICE_DT_GET(DT_PHANDLE(DIAL_MOTOR_NODE, rx_manager));
+        uint16_t rx_id = DT_PROP(DIAL_MOTOR_NODE, rx_id);
+        if (rx_mgr == NULL || rx_id == 0)
+        {
+            LOG_ERR("Dial motor: rx manager or rx id missing");
+            return -ENODEV;
+        }
+        struct can_filter filter = {
+            .id = rx_id & CAN_STD_ID_MASK,
+            .mask = CAN_STD_ID_MASK,
+            .flags = 0,
+        };
+        int ret = can_rx_manager_register(rx_mgr, &filter, dial_motor_rx_handler, (void *)&dail_motor);
+        if (ret < 0)
+        {
+            LOG_ERR("Failed to register dial motor rx listener: %d", ret);
+            return ret;
+        }
+    }
 #endif /* CONFIG_CAN_RX_MANAGER */
 
     for (int i = 0; i < GIMBAL_CNT; i++)
@@ -340,4 +408,7 @@ void Motor_Heartbeat()
     {
         chassis_motor[i].single_heart_beat(&chassis_motor[i]);
     }
+
+    /* KT 拨盘电机心跳 */
+    dail_motor.heartbeat(&dail_motor);
 }
